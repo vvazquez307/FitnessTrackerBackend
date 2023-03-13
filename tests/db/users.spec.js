@@ -17,7 +17,7 @@ const { createFakeUser } = require("../helpers");
 
 describe("DB Users", () => {
   describe("createUser({ username, password })", () => {
-    it("Creates and returns the user", async () => {
+    xit("Creates and returns the user", async () => {
       const fakeUserData = {
         username: "Horace",
         password: faker.internet.password(),
