@@ -1,9 +1,14 @@
 const client = require("./client");
+const bcrypt = require("bcrypt");
 
 // database functions
 
 // user functions
 async function createUser({ username, password }) {
+  const SALT_COUNT = 10;
+  const hashedPassword = await bcrypt.hash(password, SALT_COUNT);
+  password = hashedPassword;
+  // let userToAdd = {username, hashedPassword }
   try {
     const {
       rows: [user],
@@ -11,7 +16,7 @@ async function createUser({ username, password }) {
       `INSERT INTO users (username, password)
        VALUES($1, $2)
        ON CONFLICT(username) DO NOTHING
-       RETURNING *;
+       RETURNING id, username;
       `,
       [username, password]
     );
@@ -22,18 +27,14 @@ async function createUser({ username, password }) {
 }
 
 async function getUser({ username, password }) {
+  const user = await getUserByUsername(username);
+  const hashedPassword = user.password;
+  const isValid = await bcrypt.compare(password, hashedPassword);
   try {
-    const {
-      rows: [user],
-    } = await client.query(
-      `SELECT id, username 
-      FROM users
-      WHERE username = ${username} && password = ${password};
-      `
-    );
-    if (user.length === 0) {
+    if (!isValid) {
       return null;
     } else {
+      delete user.password;
       return user;
     }
   } catch (error) {
@@ -46,14 +47,16 @@ async function getUserById(userId) {
     const {
       rows: [user],
     } = await client.query(
-      `SELECT id, username 
+      `SELECT *
       FROM users
-      WHERE id = ${userId};
-      `
+      WHERE id = $1;
+      `,
+      [userId]
     );
-    if (user.length === 0) {
+    if (!user) {
       return null;
     } else {
+      delete user.password;
       return user;
     }
   } catch (error) {
