@@ -9,6 +9,7 @@ async function dropTables() {
     DROP TABLE IF EXISTS users;
     DROP TABLE IF EXISTS routines;
     DROP TABLE IF EXISTS activities;
+    DROP TABLE IF EXISTS routine_activities;
   `);
  
 }
@@ -34,7 +35,13 @@ async function createTables() {
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL, 
     description TEXT NOT NULL,
-  )
+  );
+  CREATE TABLE routine_activities(
+    "routineId" INTEGER REFERENCES users(id),
+    "activityId" INTEGER REFERENCES users(id),
+    count INTEGER NOT NULL,
+    duration INTEGER NOT NULL
+  );
   `)
 }
 
