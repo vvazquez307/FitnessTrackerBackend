@@ -6,6 +6,9 @@ const {
   getRoutinesWithoutActivities,
   getAllActivities,
   addActivityToRoutine,
+  getRoutineActivitiesByRoutine,
+  updateRoutineActivity,
+  destroyRoutineActivity,
 } = require("./index");
 const client = require("./client");
 
