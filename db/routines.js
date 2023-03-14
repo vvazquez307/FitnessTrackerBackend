@@ -1,6 +1,5 @@
-const { getActivityById } = require("./activities");
 const client = require("./client");
-const { getUserById } = require("./users");
+const { attachActivitiesToRoutines } = require("./activities");
 
 async function createRoutine({ creatorId, isPublic, name, goal }) {
   try {
@@ -8,7 +7,7 @@ async function createRoutine({ creatorId, isPublic, name, goal }) {
       rows: [routine],
     } = await client.query(
       `
-      INSERT INTO routines ("creatorId", "isPublic", name, goal)
+      INSERT INTO routines ("creatorId", "isPublic", "name", "goal")
       VALUES ($1, $2, $3, $4)
       RETURNING *;
       `,
@@ -44,21 +43,29 @@ async function getRoutineById(id) {
   }
 }
 
-async function getRoutinesWithoutActivities() {}
+async function getRoutinesWithoutActivities() {
+  const { rows } = await client.query(
+    `
+  SELECT *
+  FROM routines;
+  `
+  );
+  console.log("HELLO", rows);
+  return rows;
+}
 
 async function getAllRoutines() {
   try {
     const { rows } = await client.query(
-      `SELECT *
-      FROM routines;`
+      `
+      SELECT routines.*, users.username AS "creatorName"
+      FROM routines
+      JOIN users ON routines."creatorId" = users.id;
+      `
     );
-    rows.map(async (e) => {
-      const user = await getUserById(e.creatorId);
-      console.log(user);
-      const username = user.username;
-      console.log(username);
-    });
-    return rows;
+
+    console.log(rows);
+    return attachActivitiesToRoutines(rows);
   } catch (error) {
     console.log(error);
     throw error;

@@ -1,5 +1,12 @@
 // require in the database adapter functions as you write them (createUser, createActivity...)
-const { createUser, createActivity, createRoutine } = require("./index");
+const {
+  createUser,
+  createActivity,
+  createRoutine,
+  getRoutinesWithoutActivities,
+  getAllActivities,
+  addActivityToRoutine,
+} = require("./index");
 const client = require("./client");
 
 async function dropTables() {
@@ -40,6 +47,7 @@ async function createTables() {
       description TEXT NOT NULL
     );
     CREATE TABLE routine_activities(
+      id SERIAL PRIMARY KEY,
       "routineId" INTEGER REFERENCES routines(id),
       "activityId" INTEGER REFERENCES activities(id),
       count INTEGER NOT NULL,
