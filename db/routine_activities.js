@@ -1,5 +1,4 @@
 const client = require("./client");
-const { createRoutine } = require("./routines");
 
 async function addActivityToRoutine({
   routineId,
@@ -27,76 +26,103 @@ async function addActivityToRoutine({
 
 async function getRoutineActivityById(id) {
   try {
-    const { rows: [routine_activity] } = await client.query(`
+    const {
+      rows: [routine_activity],
+    } = await client.query(
+      `
     SELECT *
     FROM routine_activities
     WHERE id = $1
-    `, [id]);
-    return routine_activity
+    `,
+      [id]
+    );
+    return routine_activity;
   } catch (error) {
+    console.log(error);
     throw error;
   }
 }
 
 async function getRoutineActivitiesByRoutine({ id }) {
   try {
-    const { rows } = await client.query(`
+    const { rows } = await client.query(
+      `
     SELECT *
     FROM routine_activities
     WHERE "routineId" = $1;
-    `, [id]);
-    return rows
+    `,
+      [id]
+    );
+    return rows;
   } catch (error) {
+    console.log(error);
     throw error;
   }
 }
 
 async function updateRoutineActivity({ id, ...fields }) {
-
-  const newData = Object.keys(fields).map(
-    (key, index) => `${ key }=$${ index + 1 }`
-  ).join(', ');
+  const newData = Object.keys(fields)
+    .map((key, index) => `${key}=$${index + 1}`)
+    .join(", ");
 
   try {
-    const { rows: [updatedActivity] } = await client.query(`
+    const {
+      rows: [updatedActivity],
+    } = await client.query(
+      `
     UPDATE routine_activities
     SET ${newData}
     WHERE id = ${id}
     RETURNING *;
-    `, Object.values(fields));
-    return updatedActivity
+    `,
+      Object.values(fields)
+    );
+    return updatedActivity;
   } catch (error) {
+    console.log(error);
     throw error;
   }
 }
 
 async function destroyRoutineActivity(id) {
   try {
-    const {rows: [deletedRoutineActivity]} = await client.query(`
+    const {
+      rows: [deletedRoutineActivity],
+    } = await client.query(
+      `
     DELETE FROM routine_activities
     WHERE id = $1
     RETURNING *;
-    `, [id]);
-    return deletedRoutineActivity
+    `,
+      [id]
+    );
+    return deletedRoutineActivity;
   } catch (error) {
+    console.log(error);
     throw error;
   }
 }
 
 async function canEditRoutineActivity(routineActivityId, userId) {
   try {
-    const { rows: [creator] } = await client.query(`
+    const {
+      rows: [creator],
+    } = await client.query(
+      `
     SELECT * 
     FROM routine_activities
     JOIN routines ON routine_activities.id = $1
     AND routines."creatorId" = $2;
-    `, [routineActivityId, userId])
-    if(!creator){
-      return false
-    }else{
-      return true
+    `,
+      [routineActivityId, userId]
+    );
+    if (!creator) {
+      return false;
+    } else {
+      return true;
     }
   } catch (error) {
+    console.log(error);
     throw error;
   }
 }
