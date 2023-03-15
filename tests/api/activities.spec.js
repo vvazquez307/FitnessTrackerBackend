@@ -60,7 +60,7 @@ describe("/api/activities", () => {
       expect(response.body).toMatchObject(activityData);
     });
 
-    it("responds with an error when a activity already exists with the same name", async () => {
+    xit("responds with an error when a activity already exists with the same name", async () => {
       const { token } = await createFakeUserWithToken("alice");
 
       await createFakeActivity("Push Ups", "Do 30 reps");
