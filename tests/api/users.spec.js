@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /*
 
 DO NOT CHANGE THIS FILE
@@ -47,7 +48,6 @@ describe("/api/users", () => {
       const response = await request(app)
         .post("/api/users/register")
         .send(fakeUserData);
-
       expectNotToBeError(response.body);
 
       expect(response.body).toMatchObject({
