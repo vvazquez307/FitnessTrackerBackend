@@ -75,7 +75,7 @@ async function getUserByUsername(userName) {
       `,
       [userName]
     );
-    if (user.length === 0) {
+    if (!user) {
       return null;
     } else {
       return user;

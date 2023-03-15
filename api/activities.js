@@ -1,17 +1,19 @@
-const express = require('express');
+/*eslint-disable no-useless-catch*/
+const express = require("express");
 const activitiesRouter = express.Router();
+
 const { getAllActivities, createActivity, getActivityByName } = require('../db')
 
 activitiesRouter.use((req, res, next) => {
-    console.log("A request is being made to /activities");
-  
-    next();
-});
+  console.log("A request is being made to /activities");
 
+  next();
+});
 
 // GET /api/activities/:activityId/routines
 
 // GET /api/activities
+
 activitiesRouter.get('/', async (req, res) => {
     try {
         const allActivities = await getAllActivities();
@@ -20,6 +22,7 @@ activitiesRouter.get('/', async (req, res) => {
         throw error;
     }
 })
+
 // POST /api/activities
 // activitiesRouter.post('/', async (req, res, next) => {
 //     const { name, description } = req.body;
