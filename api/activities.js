@@ -2,7 +2,7 @@
 const express = require("express");
 const activitiesRouter = express.Router();
 
-const { getAllActivities, createActivity, getActivityByName, getActivityById, updateActivity } = require('../db')
+const { getAllActivities, createActivity, getActivityByName, getActivityById, updateActivity, getPublicRoutinesByActivity } = require('../db')
 
 activitiesRouter.use((req, res, next) => {
   console.log("A request is being made to /activities");
@@ -11,6 +11,17 @@ activitiesRouter.use((req, res, next) => {
 });
 
 // GET /api/activities/:activityId/routines
+activitiesRouter.get('/:activityId/routines', async ( req, res) => {
+    try {
+        const { activityId } = req.params
+        console.log(activityId)
+        const routines = await getPublicRoutinesByActivity(activityId)
+        console.log(routines)
+        // res.send(routines)
+    } catch (error) {
+        throw error;
+    }
+})
 
 // GET /api/activities
 activitiesRouter.get('/', async (req, res) => {
@@ -59,8 +70,6 @@ activitiesRouter.patch('/:activityId', async (req, res, next)=> {
         if(description){
             updatedData.description = description;
         }
-        
-        console.log(updatedData, " ??????????????????????????????????????????????????????????")
 
         const activityById = await getActivityById(activityId)
         const activityByName = await getActivityByName(updatedData.name)
