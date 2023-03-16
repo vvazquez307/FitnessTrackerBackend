@@ -11,15 +11,21 @@ activitiesRouter.use((req, res, next) => {
 });
 
 // GET /api/activities/:activityId/routines
-activitiesRouter.get('/:activityId/routines', async ( req, res) => {
+activitiesRouter.get('/:activityId/routines', async ( req, res, next) => {
     try {
         const { activityId } = req.params
-        console.log(activityId)
-        const routines = await getPublicRoutinesByActivity(activityId)
-        console.log(routines)
-        // res.send(routines)
-    } catch (error) {
-        throw error;
+        const routines = await getPublicRoutinesByActivity({ id: activityId })
+        if(routines.length === 0){
+            next({
+                error: "error",
+                message: `Activity ${activityId} not found`,
+                name: "routineActivityDoesNotExist"
+            })
+        }else{
+            res.send(routines)
+        }
+    } catch ({name, message}) {
+      next({name, message})
     }
 })
 
