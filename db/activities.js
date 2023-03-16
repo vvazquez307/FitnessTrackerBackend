@@ -48,7 +48,7 @@ async function getActivityById(id) {
     if (!activity) {
       throw {
         name: "ActivityNotFoundError",
-        message: "activity not found with given ID",
+        message: `Activity ${id} not found`,
       };
     } else {
       return activity;
@@ -70,14 +70,7 @@ async function getActivityByName(name) {
     `,
       [name]
     );
-    if (!activity) {
-      throw {
-        name: "ActivityNotFoundError",
-        message: "activity not found with given name",
-      };
-    } else {
-      return activity;
-    }
+    return activity;
   } catch (error) {
     console.log(error);
     throw error;
@@ -127,7 +120,6 @@ async function updateActivity({ id, ...fields }) {
   const setString = Object.keys(fields)
     .map((key, index) => `"${key}"=$${index + 1}`)
     .join(", ");
-
   try {
     if (setString.length > 0) {
       const {
