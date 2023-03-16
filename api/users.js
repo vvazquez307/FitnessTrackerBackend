@@ -6,10 +6,10 @@ const bcrypt = require("bcrypt");
 const {
   getUserByUsername,
   createUser,
-  getUser,
   getAllRoutinesByUser,
   getAllPublicRoutines,
 } = require("../db");
+const requireUser = require("./util");
 
 usersRouter.use((req, res, next) => {
   console.log("A request is being made to /users");
@@ -85,22 +85,12 @@ usersRouter.post("/login", async (req, res, next) => {
 });
 
 // GET /api/users/me
-usersRouter.get("/me", async (req, res, next) => {
-  if (!req.headers.authorization) {
-    next({
-      name: "MissingTokenError",
-      message: "You must be logged in to perform this action",
-    });
-  }
-
+usersRouter.get("/me", requireUser, async (req, res, next) => {
   try {
-    const token = req.headers.authorization.split(" ")[1];
-    const { username } = jwt.verify(token, process.env.JWT_SECRET);
-    if (username) {
-      const user = await getUserByUsername(username);
-      if (user) {
-        res.send(user);
-      }
+    const username = req.user.username;
+    const user = await getUserByUsername({ username: username });
+    if (user) {
+      res.send(user);
     } else {
       next({
         name: "UserNotFoundError",
@@ -113,16 +103,18 @@ usersRouter.get("/me", async (req, res, next) => {
 });
 
 // GET /api/users/:username/routines
-usersRouter.get("/:username/routines", async (req, res, next) => {
+usersRouter.get("/:username/routines", requireUser, async (req, res, next) => {
   try {
-    const user = await getUserByUsername(req.params.username);
-    console.log(user);
+    const { username } = req.params;
+    const user = await getUserByUsername({ username: username });
     if (user) {
-      const routines = await getAllRoutinesByUser(req.params);
+      const routines = await getAllRoutinesByUser({ username: username });
       res.send(routines);
     } else {
-      const routines = await getAllPublicRoutines(req.params);
-      res.send(routines);
+      next({
+        name: "UserNotFoundError",
+        message: "User not found",
+      });
     }
   } catch (error) {
     next(error);
