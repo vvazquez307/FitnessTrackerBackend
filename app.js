@@ -4,7 +4,7 @@ const express = require("express");
 const server = express();
 const cors = require("cors");
 const morgan = require("morgan");
-// const PORT = 3000;
+
 // Setup your Middleware and API Router here
 
 const client = require("./db/client");
@@ -23,12 +23,12 @@ server.use((req, res, next) => {
 const apiRouter = require("./api");
 server.use("/api", apiRouter);
 
-// server.get("*", req, res) => {
-//     res.status(404).send({
-//       name: "404 Not Found",
-//       message: "No file found at the given route",
-//     })
-// };
+server.get("*", (req, res) => {
+  res.status(404).send({
+    name: "404 Not Found",
+    message: "Could not fine page with that url",
+  });
+});
 
 server.use((error, req, res, next) => {
   console.error("SERVER ERROR: ", error);
