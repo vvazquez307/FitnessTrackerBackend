@@ -109,7 +109,7 @@ usersRouter.get("/:username/routines", requireUser, async (req, res, next) => {
   try {
     if (!user) {
       next({
-        name: "UserDoesNotExist",
+        name: "UserNotFoundError",
         message: "User not found",
       });
     } else if (req.user.id === user.id) {
