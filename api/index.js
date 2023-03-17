@@ -17,7 +17,6 @@ router.use(async (req, res, next) => {
   const auth = req.header("Authorization");
 
   if (!auth) {
-    // nothing to see here
     next();
   } else if (auth.startsWith(prefix)) {
     const token = auth.slice(prefix.length);

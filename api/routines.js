@@ -87,7 +87,6 @@ routinesRouter.delete("/:routineId", requireUser, async (req, res, next) => {
       const destroyedRoutine = await destroyRoutine(routineId);
       console.log(destroyedRoutine, "////////////////////");
       res.send(destroyedRoutine);
-      //   res.send(routine);
     }
   } catch (error) {
     next(error);
