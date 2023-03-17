@@ -1,6 +1,7 @@
+const { response } = require('express');
 const express = require('express');
 const routine_activitiesRouter = express.Router();
-const {} = require('../db')
+const { updateRoutineActivity } = require('../db')
 
 routine_activitiesRouter.use((req, res, next) => {
     console.log("A request is being made to /routine_activities");
@@ -8,7 +9,7 @@ routine_activitiesRouter.use((req, res, next) => {
     next();
 });
 // PATCH /api/routine_activities/:routineActivityId
-routine_activitiesRouter.patch('/routine_activities/:routineActivityId', async (req, res, next) => {
+routine_activitiesRouter.patch('/:routineActivityId', async (req, res, next) => {
 try {
     const { routineActivityId } = req.params;
     const { count, duration } = req.body;
@@ -22,6 +23,8 @@ try {
     if(duration){
         updatedData.duration = duration;
     }
+        const updatedRoutineActivity = await updateRoutineActivity({id:routineActivityId, ...updatedData})
+        res.send(updatedRoutineActivity)
 
 
 } catch (error) {
