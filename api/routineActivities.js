@@ -1,16 +1,33 @@
 const express = require('express');
-const R_A_Router = express.Router();
+const routine_activitiesRouter = express.Router();
 const {} = require('../db')
 
-R_A_Router.use((req, res, next) => {
-    console.log("A request is being made to /`routine_activities`");
+routine_activitiesRouter.use((req, res, next) => {
+    console.log("A request is being made to /routine_activities");
   
     next();
 });
 // PATCH /api/routine_activities/:routineActivityId
-R_A_Router.patch('/routine_activities/:routineActivityId', requireUser, async (req, res, next) => {
+routine_activitiesRouter.patch('/routine_activities/:routineActivityId', async (req, res, next) => {
+try {
+    const { routineActivityId } = req.params;
+    const { count, duration } = req.body;
+    const updatedData = {}
+    console.log(routineActivityId, "/////////////routineActivityId//////////////////")
+    console.log(count, " //////////////////count////////////////")
+    console.log(duration, " ////////////////duration///////////////")
+    if(count){
+        updatedData.count = count;
+    }
+    if(duration){
+        updatedData.duration = duration;
+    }
 
+
+} catch (error) {
+    throw error;
+}
 })
 // DELETE /api/routine_activities/:routineActivityId
 
-module.exports = router;
+module.exports = routine_activitiesRouter;
