@@ -8,6 +8,7 @@ const {
   createUser,
   getAllRoutinesByUser,
   getAllPublicRoutines,
+  getPublicRoutinesByUser,
 } = require("../db");
 const requireUser = require("./util");
 
@@ -87,15 +88,13 @@ usersRouter.post("/login", async (req, res, next) => {
 // GET /api/users/me
 usersRouter.get("/me", requireUser, async (req, res, next) => {
   try {
-    const username = req.user.username;
-    const user = await getUserByUsername({ username: username });
-    if (user) {
-      res.send(user);
+    const { username } = req.user;
+    const userData = await getUserByUsername(username);
+
+    if (userData) {
+      res.send(userData);
     } else {
-      next({
-        name: "UserNotFoundError",
-        message: "User not found",
-      });
+      next({ name: "UserNotFoundError", message: "User not found" });
     }
   } catch (error) {
     next(error);
@@ -104,17 +103,21 @@ usersRouter.get("/me", requireUser, async (req, res, next) => {
 
 // GET /api/users/:username/routines
 usersRouter.get("/:username/routines", requireUser, async (req, res, next) => {
+  const { username } = req.params;
+  const user = await getUserByUsername(username);
+
   try {
-    const { username } = req.params;
-    const user = await getUserByUsername({ username: username });
-    if (user) {
-      const routines = await getAllRoutinesByUser({ username: username });
-      res.send(routines);
-    } else {
+    if (!user) {
       next({
-        name: "UserNotFoundError",
+        name: "UserDoesNotExist",
         message: "User not found",
       });
+    } else if (req.user.id === user.id) {
+      const routines = await getAllRoutinesByUser({ username });
+      res.send(routines);
+    } else {
+      const routines = await getPublicRoutinesByUser({ username });
+      res.send(routines);
     }
   } catch (error) {
     next(error);
