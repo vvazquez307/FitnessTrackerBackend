@@ -1,5 +1,9 @@
 const client = require("./client");
 const { attachActivitiesToRoutines } = require("./activities");
+const {
+  getRoutineActivitiesByRoutine,
+  destroyRoutineActivity,
+} = require("./routine_activities");
 
 async function createRoutine({ creatorId, isPublic, name, goal }) {
   try {
@@ -178,20 +182,20 @@ async function updateRoutine({ id, ...fields }) {
 async function destroyRoutine(id) {
   // Deletes all the routine_activities whose routine is the one being deleted.
   try {
-    await client.query(
-      `
-      DELETE FROM routine_activities
-      WHERE "routineId" = $1;
-      `,
-      [id]
-    );
-    await client.query(
+    const routineActivities = await getRoutineActivitiesByRoutine({ id: id });
+    routineActivities.forEach((e) => destroyRoutineActivity(e));
+
+    const {
+      rows: [deletedRoutine],
+    } = await client.query(
       `
       DELETE FROM routines
-      WHERE id = $1;
+      WHERE id = $1
+      RETURNING *;
       `,
       [id]
     );
+    return deletedRoutine;
   } catch (error) {
     console.log(error);
     throw error;
