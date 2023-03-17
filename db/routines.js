@@ -182,9 +182,16 @@ async function updateRoutine({ id, ...fields }) {
 async function destroyRoutine(id) {
   // Deletes all the routine_activities whose routine is the one being deleted.
   try {
-    const routineActivities = await getRoutineActivitiesByRoutine({ id: id });
-    routineActivities.forEach((e) => destroyRoutineActivity(e));
-
+    // const routineActivities = await getRoutineActivitiesByRoutine({ id: id });
+    // console.log(routineActivities, "!!!!!!!!!!!!!");
+    // routineActivities.forEach((e) => destroyRoutineActivity(e));
+    await client.query(
+      `
+      DELETE FROM routine_activities
+      WHERE "routineId" = ${id}
+      RETURNING *;
+      `
+    );
     const {
       rows: [deletedRoutine],
     } = await client.query(

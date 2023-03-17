@@ -23,6 +23,13 @@ server.use((req, res, next) => {
 const apiRouter = require("./api");
 server.use("/api", apiRouter);
 
+// server.get("*", req, res) => {
+//     res.status(404).send({
+//       name: "404 Not Found",
+//       message: "No file found at the given route",
+//     })
+// };
+
 server.use((error, req, res, next) => {
   console.error("SERVER ERROR: ", error);
   if (res.statusCode < 400) {
